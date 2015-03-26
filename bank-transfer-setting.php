@@ -3,8 +3,16 @@
 class BankTransferSetting {
 
   private $options;
+
+  private $settings;
+  private $form;
   
   public function __construct() {
+    $this->options = get_option('bk_options');
+
+    $this->settings = new Setting($this->options);
+    $this->form = new Form($this->options);
+
     add_action('admin_menu',  array( $this, 'add_plugin_page') );
     add_action('admin_init', array( $this, 'page_init' ) );
   }
@@ -15,12 +23,9 @@ class BankTransferSetting {
 
 
   public function bank_transfer_setting_page(){
-  // Set class property
-    $this->options = get_option('bk_options');
-    ?>
+?>
     <div class="wrap">
       <?php screen_icon(); ?>
-      <h2>My Settings</h2>           
       <form method="post" action="options.php">
       <?php
         // This prints out all hidden setting fields
@@ -45,20 +50,91 @@ class BankTransferSetting {
     );
 
     add_settings_section(
-      'setting_section_id', // ID
-      'My Custom Settings', // Title
+      'general_setting_id', // ID
+      'Settings', // Title
       array( $this, 'print_section_info' ), // Callback
       'my-setting-admin' // Page
     );  
 
 
     add_settings_field(
-      'email_to', 
+      $this->settings->email_to->setting_attr_names['value'], 
       'Email To', 
-      array( $this, 'email_to_callback' ), 
+      array( $this->settings->email_to, 'input_tag' ),
       'my-setting-admin', 
-      'setting_section_id'
-    );      
+      'general_setting_id'
+    );   
+
+    add_settings_section(
+      'form_setting_id', // ID
+      'Form Settings', // Title
+      array( $this, 'print_section_info' ), // Callback
+      'my-setting-admin' // Page
+    );
+
+    add_settings_field(
+      $this->form->name->setting_attr_names['label'], 
+      'Name', 
+      array( $this->form->name, 'input_label_tag' ), 
+      'my-setting-admin', 
+      'form_setting_id'
+    );
+
+    add_settings_field(
+      $this->form->email->setting_attr_names['label'], 
+      'Email', 
+      array( $this->form->email, 'input_label_tag' ),  
+      'my-setting-admin', 
+      'form_setting_id'
+    );
+
+    add_settings_field(
+      $this->form->telephone->setting_attr_names['label'], 
+      'Telephone', 
+      array( $this->form->telephone, 'input_label_tag' ),  
+      'my-setting-admin', 
+      'form_setting_id'
+    );
+
+    add_settings_field(
+      $this->form->order_number->setting_attr_names['label'], 
+      'Order Number', 
+      array( $this->form->order_number, 'input_label_tag' ),  
+      'my-setting-admin', 
+      'form_setting_id'
+    );
+
+    add_settings_field(
+      $this->form->bank->setting_attr_names['label'], 
+      'Bank', 
+      array( $this->form->bank, 'input_label_tag' ),  
+      'my-setting-admin', 
+      'form_setting_id'
+    );
+
+    add_settings_field(
+      $this->form->transfered_at->setting_attr_names['label'], 
+      'Transfered At', 
+      array( $this->form->transfered_at, 'input_label_tag' ),  
+      'my-setting-admin', 
+      'form_setting_id'
+    );
+
+    add_settings_field(
+      $this->form->amount->setting_attr_names['label'], 
+      'Amount', 
+      array( $this->form->amount, 'input_label_tag' ),  
+      'my-setting-admin', 
+      'form_setting_id'
+    );
+
+    add_settings_field(
+      $this->form->submit->setting_attr_names['label'], 
+      'Submit', 
+      array( $this->form->submit, 'input_label_tag' ),  
+      'my-setting-admin', 
+      'form_setting_id'
+    );
   }
 
   /**
@@ -69,9 +145,33 @@ class BankTransferSetting {
   public function sanitize( $input )
   {
     $new_input = array();
-  
-    if( isset( $input['email_to'] ) )
-      $new_input['email_to'] = sanitize_text_field( $input['email_to'] );
+    
+    if( isset( $input['setting_email_to'] ) )
+      $new_input['setting_email_to'] = sanitize_text_field( $input['setting_email_to'] );
+
+    if( isset( $input[$this->form->name->setting_attr_names['label']] ) )
+      $new_input[$this->form->name->setting_attr_names['label']] = sanitize_text_field( $input[$this->form->name->setting_attr_names['label']] );
+    
+    if( isset( $input[$this->form->email->setting_attr_names['label']] ) )
+      $new_input[$this->form->email->setting_attr_names['label']] = sanitize_text_field( $input[$this->form->email->setting_attr_names['label']] );
+    
+    if( isset( $input[$this->form->telephone->setting_attr_names['label']] ) )
+      $new_input[$this->form->telephone->setting_attr_names['label']] = sanitize_text_field( $input[$this->form->telephone->setting_attr_names['label']] );
+    
+    if( isset( $input[$this->form->order_number->setting_attr_names['label']] ) )
+      $new_input[$this->form->order_number->setting_attr_names['label']] = sanitize_text_field( $input[$this->form->order_number->setting_attr_names['label']] );
+    
+    if( isset( $input[$this->form->bank->setting_attr_names['label']] ) )
+      $new_input[$this->form->bank->setting_attr_names['label']] = sanitize_text_field( $input[$this->form->bank->setting_attr_names['label']] );
+    
+    if( isset( $input[$this->form->transfered_at->setting_attr_names['label']] ) )
+      $new_input[$this->form->transfered_at->setting_attr_names['label']] = sanitize_text_field( $input[$this->form->transfered_at->setting_attr_names['label']] );
+    
+    if( isset( $input[$this->form->amount->setting_attr_names['label']] ) )
+      $new_input[$this->form->amount->setting_attr_names['label']] = sanitize_text_field( $input[$this->form->amount->setting_attr_names['label']] );
+
+    if( isset( $input[$this->form->submit->setting_attr_names['label']] ) )
+      $new_input[$this->form->submit->setting_attr_names['label']] = sanitize_text_field( $input[$this->form->submit->setting_attr_names['label']] );
 
     return $new_input;
   }
@@ -81,18 +181,18 @@ class BankTransferSetting {
    */
   public function print_section_info()
   {
-    print 'Enter your settings below:';
+    // print 'Enter your settings below:';
   }
 
 
   /** 
    * Get the settings option array and print one of its values
    */
-  public function email_to_callback()
-  {
+  public function input_field($options) {
     printf(
-      '<input type="text" id="email_to" name="bk_options[email_to]" value="%s" />',
-      isset( $this->options['email_to'] ) ? esc_attr( $this->options['email_to']) : ''
+      '<input type="text" id="%s" name="bk_options[%s]" value="%s" />',
+      $options['attr_name'], $options['attr_name'],
+      isset( $this->options[$options['attr_name']] ) ? esc_attr( $this->options[$options['attr_name']]) : ''
     );
   }
 
