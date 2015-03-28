@@ -10,16 +10,24 @@ class InputField
   public $setting_attr_names;
   public $label;
   public $value;
+  public $id;
 
   function __construct($field_name, $settings=null)
   {
+    $this->id = $field_name;
     $this->setting_attr_names['value'] = $this->prefix_attr.$field_name;
     $this->setting_attr_names['label'] = $this->prefix_attr.$field_name.'_label';
 
     if( $settings != null ) {
       $this->settings_data = $settings;
 
-      $this->label = $this->get_value('label');
+      $label = $this->get_value('label');
+      if( empty( $label ) ) {
+        $this->label = ucfirst( str_replace('_', ' ', $this->id) );
+      } else {
+        $this->label = $label;
+      }
+
       $this->value = $this->get_value('value');
     }
     
